@@ -28,6 +28,18 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/add_btn"
+        android:text="Add description"
+        />
+    <EditText
+        android:id="@+id/edit_ppl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Add Description"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/call_btn"
         android:text="Call"
         />
@@ -37,5 +49,6 @@
         android:id="@+id/sms_btn"
         android:text="SMS"
         />
+
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.neel.nimboopaani;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -38,9 +39,15 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.MANAGE_DOCUMENTS;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    int MIS_DIST=0;
+
+    double currLat=0,currLon=0;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -52,11 +59,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        HttpTask httpTask=new HttpTask();
+        HttpTask httpTask = new HttpTask();
         httpTask.execute();
+
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -64,12 +70,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION},1);
             return;
         }
         mMap.setMyLocationEnabled(true);
+
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION},1);
+            return;
+        }
+        Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        currLat=locationGPS.getLatitude();
+        currLon=locationGPS.getLongitude();
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -80,10 +96,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 i.putExtra("name",campData.getName());
                 i.putExtra("capacity",campData.getCapacity());
                 i.putExtra("contact",campData.getContact());
+                i.putExtra("Lat",String.valueOf(currLat));
+                i.putExtra("Lon",String.valueOf(currLon));
                 startActivity(i);
                 return true;
            }
         });
+
+
 
     }
 
@@ -94,7 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected String doInBackground(Void... voids) {
             try {
                 OkHttpClient client=new OkHttpClient();
-                URL url=new URL("http://10.1.130.147:8000/camps");
+                URL url=new URL("https://nimboopaani.azurewebsites.net/camps");
                 Request request=new Request.Builder()
                         .url(url)
                         .build();
