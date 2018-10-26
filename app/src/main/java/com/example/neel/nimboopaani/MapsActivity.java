@@ -114,7 +114,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected String doInBackground(Void... voids) {
             try {
                 OkHttpClient client=new OkHttpClient();
-                URL url=new URL("https://nimboopaani.azurewebsites.net/camps");
+//                URL url=new URL("https://nimboopaani.azurewebsites.net/camps");
+                URL url=new URL("http://10.1.134.235:8000/camps");
                 Request request=new Request.Builder()
                         .url(url)
                         .build();
